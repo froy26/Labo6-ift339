@@ -15,10 +15,32 @@
 template <typename Tclef, typename Tvaleur>
 typename map<Tclef,Tvaleur>::iterator map<Tclef,Tvaleur>::lower_bound(const Tclef& c)const{
     //STUB O(n log n) a remplacer par une fonction O(log n)
-    iterator i;
-    for(i=begin();i!=end();++i)
-        if(!(i->first < c))break;
-    return i;
+    //iterator i = begin();
+    noeud *n = RACINE();
+
+    //while(n->GAUCHE != nullptr || n->DROITE != nullptr){
+    while(n != nullptr){
+        if(!(c < n->CONTENU->first))break;
+
+        if(c < n->CONTENU->first){
+            n = n->GAUCHE;
+        }else{
+            n = n->DROITE;
+        }
+    }
+
+    //Si rien n'a été trouvé, on retourne APRES.
+    if(n == nullptr){
+        n = APRES;
+        std::cout << "Aucun élément trouvé!!!" << std::endl;
+    }
+
+    /*for(i=begin();i!=end();++i)
+        if(!(i->first < c))break;*/
+
+
+
+    return iterator(n);
 }
 
 ///////////////////////////////////////////////////////////////////////////

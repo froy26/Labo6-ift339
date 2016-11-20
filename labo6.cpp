@@ -7,19 +7,25 @@
 int main()
 {
 	map<char,int> m = map<char, int>();
+    map<char,int>::iterator i = m.begin();
 
-	m['a']=10;
-	m['b']=15;
-	m['c']=17;
-	m['d']=20;
-	m['e']=30;
-	m['f']=35;
-	m['g']=40;
-	m['h']=42;
-	m['i']=45;
-	m['j']=50;
+	m['q']=10;
+	m['w']=15;
+	m['e']=17;
+	m['r']=20;
+	m['t']=30;
+	m['y']=35;
+	m['u']=40;
+	m['i']=42;
+	m['o']=45;
+	m['p']=50;
 
 	m.afficher();
+
+    i = m.lower_bound('q');
+
+    std::cout << i->first << std::endl;
+
 
   return 0;
 }
