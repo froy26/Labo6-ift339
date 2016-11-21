@@ -22,9 +22,9 @@ int main()
 
 	m.afficher();
 
-    i = m.lower_bound('q');
+    //i = m.lower_bound('q');
 
-    std::cout << i->first << std::endl;
+    //std::cout << i->first << std::endl;
 
 
   return 0;

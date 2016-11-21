@@ -103,6 +103,14 @@ void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
+    if(p->POIDS <= -2){
+        if(p->DROITE->POIDS == 1){
+            rotation_gauche_droite(p->DROITE);
+        }
+
+        rotation_droite_gauche(p);
+    }
+
 }
 
 template <typename Tclef, typename Tvaleur>
@@ -111,6 +119,23 @@ void map<Tclef,Tvaleur>::rotation_gauche_droite(noeud*& p){
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::rotation_droite_gauche(noeud*& p){
+    noeud *i = p->DROITE;
+
+    /*Opérations pour calculer le poid est pris du
+        livre Structures de données - IFT339 de Jean Goulet*/
+    int poidP = p->POIDS;
+    int poidI = i->POIDS;
+    int nPoidI = -poidP-std::max(0,-poidP)-1+poidI;
+    int nPoidP = poidP-std::max(0,-poidI)-1;
+
+    p->DROITE = i->GAUCHE;
+    i->PARENT = p->PARENT;
+    i->GAUCHE = p;
+    p->PARENT = i;
+
+
+    i->POIDS = nPoidI;
+    p->POIDS = nPoidP;
 }
 
 
