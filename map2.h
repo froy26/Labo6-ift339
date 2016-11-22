@@ -103,14 +103,12 @@ void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
-    if(p->POIDS <= -2){
-        if(p->DROITE->POIDS == 1){
-            rotation_gauche_droite(p->DROITE);
-        }
 
-        rotation_droite_gauche(p);
+
+    if(!(p->POIDS*3 < p->PARENT->DROITE->POIDS)){
+        //transferer_vers_la_droite(p->GAUCHE);
+        transferer_vers_la_gauche(p->DROITE);
     }
-
 }
 
 template <typename Tclef, typename Tvaleur>
