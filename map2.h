@@ -20,19 +20,24 @@ typename map<Tclef,Tvaleur>::iterator map<Tclef,Tvaleur>::lower_bound(const Tcle
 
     //while(n->GAUCHE != nullptr || n->DROITE != nullptr){
     while(n != nullptr){
-        if(!(c < n->CONTENU->first))break;
+        //if(!(c < n->CONTENU->first))break;
+
+        if(!(n->CONTENU->first < c))break;
+
 
         if(c < n->CONTENU->first){
             n = n->GAUCHE;
-        }else{
+        }else /*if(n->CONTENU->first < c)*/{
             n = n->DROITE;
         }
+
+
     }
 
     //Si rien n'a été trouvé, on retourne APRES.
     if(n == nullptr){
         n = APRES;
-        std::cout << "Aucun élément trouvé!!!" << std::endl;
+        std::cout << "Aucun élément trouvé!" << std::endl;
     }
 
     /*for(i=begin();i!=end();++i)
@@ -104,10 +109,13 @@ void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
 
+    if(p != RACINE() && p->PARENT->DROITE != nullptr){
+        if(!(p->POIDS*3 < p->PARENT->DROITE->POIDS)){
+            //transferer_vers_la_droite(p->GAUCHE);
+            transferer_vers_la_gauche(p->DROITE);
 
-    if(!(p->POIDS*3 < p->PARENT->DROITE->POIDS)){
-        //transferer_vers_la_droite(p->GAUCHE);
-        transferer_vers_la_gauche(p->DROITE);
+            rotation_droite_gauche(p);
+        }
     }
 }
 
@@ -121,19 +129,23 @@ void map<Tclef,Tvaleur>::rotation_droite_gauche(noeud*& p){
 
     /*Opérations pour calculer le poid est pris du
         livre Structures de données - IFT339 de Jean Goulet*/
-    int poidP = p->POIDS;
-    int poidI = i->POIDS;
-    int nPoidI = -poidP-std::max(0,-poidP)-1+poidI;
-    int nPoidP = poidP-std::max(0,-poidI)-1;
+    //int poidP = p->POIDS;
+    //int poidI = i->POIDS;
+    //int nPoidI = -poidP-std::max(0,-poidP)-1+poidI;
+    //int nPoidP = poidP-std::max(0,-poidI)-1;
 
-    p->DROITE = i->GAUCHE;
+    /*p->DROITE = i->GAUCHE;
     i->PARENT = p->PARENT;
     i->GAUCHE = p;
+    p->PARENT = i;*/
+
+    p->GAUCHE = i->DROITE;
+    i->DROITE = p;
+    i->PARENT = p->PARENT;
     p->PARENT = i;
 
-
-    i->POIDS = nPoidI;
-    p->POIDS = nPoidP;
+    p->POIDS = p->GAUCHE->POIDS + p->DROITE->POIDS;
+    i->POIDS = i->GAUCHE->POIDS + i->DROITE->POIDS;
 }
 
 
