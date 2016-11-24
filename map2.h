@@ -96,14 +96,19 @@ void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
 
-    /*if(p != RACINE() && p->PARENT->DROITE != nullptr){
-        if(!(p->POIDS*3 < p->PARENT->DROITE->POIDS)){
-            //transferer_vers_la_droite(p->GAUCHE);
-            transferer_vers_la_gauche(p->DROITE);
+    if(p->GAUCHE != nullptr){
+        if(p->GAUCHE->POIDS * 3 < p->DROITE->POIDS){
+            if(p->DROITE->GAUCHE != nullptr
+              && p->DROITE->DROITE != nullptr
+              && !(p->DROITE->GAUCHE->POIDS < p->DROITE->DROITE->POIDS * 2)){
+              rotation_gauche_droite(p->DROITE);
+            }
 
             rotation_droite_gauche(p);
         }
-    }*/
+    }else if(p->GAUCHE == nullptr && 3 < p->DROITE->POIDS){
+      rotation_droite_gauche(p);
+    }
 }
 
 template <typename Tclef, typename Tvaleur>
@@ -112,27 +117,16 @@ void map<Tclef,Tvaleur>::rotation_gauche_droite(noeud*& p){
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::rotation_droite_gauche(noeud*& p){
-    noeud *i = p->DROITE;
+    /*Vérifier les cas limites pour le calcul de poid (si enfants existent pas)*/
 
-    /*Opérations pour calculer le poid est pris du
-        livre Structures de données - IFT339 de Jean Goulet*/
-    //int poidP = p->POIDS;
-    //int poidI = i->POIDS;
-    //int nPoidI = -poidP-std::max(0,-poidP)-1+poidI;
-    //int nPoidP = poidP-std::max(0,-poidI)-1;
+    noeud *hook = p->DROITE;
 
-    /*p->DROITE = i->GAUCHE;
-    i->PARENT = p->PARENT;
-    i->GAUCHE = p;
-    p->PARENT = i;*/
+    p = hook->DROITE;
+    hook->DROITE = p->GAUCHE;
+    p->GAUCHE = hook;
 
-    /*p->GAUCHE = i->DROITE;
-    i->DROITE = p;
-    i->PARENT = p->PARENT;
-    p->PARENT = i;
-
-    p->POIDS = p->GAUCHE->POIDS + p->DROITE->POIDS;
-    i->POIDS = i->GAUCHE->POIDS + i->DROITE->POIDS;*/
+    hook->POIDS = hook->GAUCHE->POIDS + hook->DROITE->POIDS + 1;
+    p->POIDS = p->GAUCHE->POIDS + p->DROITE->POIDS + 1;
 }
 
 
