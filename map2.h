@@ -14,38 +14,25 @@
 
 template <typename Tclef, typename Tvaleur>
 typename map<Tclef,Tvaleur>::iterator map<Tclef,Tvaleur>::lower_bound(const Tclef& c)const{
-    //STUB O(n log n) a remplacer par une fonction O(log n)
-    //iterator i = begin();
     noeud *n = RACINE();
+    noeud *dernPlusGrandEgal = APRES;
 
-    //while(n->GAUCHE != nullptr || n->DROITE != nullptr){
     while(n != nullptr){
-        //if(!(c < n->CONTENU->first))break;
-
-        if(!(n->CONTENU->first < c))break;
-
-
         if(c < n->CONTENU->first){
             n = n->GAUCHE;
-        }else /*if(n->CONTENU->first < c)*/{
+        }else{
+            dernPlusGrandEgal = n;
             n = n->DROITE;
         }
-
-
     }
 
     //Si rien n'a été trouvé, on retourne APRES.
-    if(n == nullptr){
-        n = APRES;
+    if(dernPlusGrandEgal->CONTENU->first < c){
+        dernPlusGrandEgal = APRES;
         std::cout << "Aucun élément trouvé!" << std::endl;
     }
 
-    /*for(i=begin();i!=end();++i)
-        if(!(i->first < c))break;*/
-
-
-
-    return iterator(n);
+    return iterator(dernPlusGrandEgal);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -109,14 +96,14 @@ void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
 
-    if(p != RACINE() && p->PARENT->DROITE != nullptr){
+    /*if(p != RACINE() && p->PARENT->DROITE != nullptr){
         if(!(p->POIDS*3 < p->PARENT->DROITE->POIDS)){
             //transferer_vers_la_droite(p->GAUCHE);
             transferer_vers_la_gauche(p->DROITE);
 
             rotation_droite_gauche(p);
         }
-    }
+    }*/
 }
 
 template <typename Tclef, typename Tvaleur>
@@ -139,13 +126,13 @@ void map<Tclef,Tvaleur>::rotation_droite_gauche(noeud*& p){
     i->GAUCHE = p;
     p->PARENT = i;*/
 
-    p->GAUCHE = i->DROITE;
+    /*p->GAUCHE = i->DROITE;
     i->DROITE = p;
     i->PARENT = p->PARENT;
     p->PARENT = i;
 
     p->POIDS = p->GAUCHE->POIDS + p->DROITE->POIDS;
-    i->POIDS = i->GAUCHE->POIDS + i->DROITE->POIDS;
+    i->POIDS = i->GAUCHE->POIDS + i->DROITE->POIDS;*/
 }
 
 

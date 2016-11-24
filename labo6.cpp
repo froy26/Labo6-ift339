@@ -7,7 +7,7 @@
 int main()
 {
 	map<char,int> m = map<char, int>();
-    map<char,int>::iterator i = m.begin();
+  map<char,int>::iterator i = m.begin();
 
 	m['q']=10;
 	m['w']=15;
