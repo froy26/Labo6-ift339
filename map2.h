@@ -9,16 +9,26 @@
 #ifndef map2_h
 #define map2_h
 
+#define RATIO 3  // 3:1
+
 ///////////////////////////////////////////////////////////////////////////
 // lower_bound
 
 template <typename Tclef, typename Tvaleur>
 typename map<Tclef,Tvaleur>::iterator map<Tclef,Tvaleur>::lower_bound(const Tclef& c)const{
-    //STUB O(n log n) a remplacer par une fonction O(log n)
-    iterator i;
-    for(i=begin();i!=end();++i)
-        if(!(i->first < c))break;
-    return i;
+    noeud* a=RACINE();
+    for(;a->POIDS!=1;){
+      if(c < a->CONTENU->first)
+        a=a->GAUCHE;
+      else if(a->CONTENU->first < c)
+        a=a->DROITE;
+      else
+        return iterator(a);
+    }
+    if(a->CONTENU->first < c)
+      iterator::avancer(a);
+    return iterator(a);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -37,26 +47,6 @@ void map<Tclef,Tvaleur>::iterator::avancer(noeud*& p){
   while(p->PARENT->DROITE==p && p->PARENT->POIDS!=0) p=p->PARENT;
   p=p->PARENT;
 }
-/*
-template <typename Tclef, typename Tvaleur>
-void map<Tclef,Tvaleur>::iterator::avancer(noeud*& p){
-    //AVANCER le pointeur p vers le prochain noeud en inordre
-    //cette fonction fait automatiquement exception
-    //si on avance au-dela de la fin
-    assert(p->DROITE!=p);
-    const Tclef& a_suivre=p->CONTENU->first;
-    //trouver la cellule suivant=APRES en remontant
-    for(p=p->PARENT;p->POIDS!=0;p=p->PARENT);
-    noeud *q=p->GAUCHE; //la racine
-    while(q!=nullptr)
-        if(a_suivre < q->CONTENU->first){
-            p=q;
-            q=q->GAUCHE;
-        }
-        else
-            q=q->DROITE;
-}*/
-
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::iterator::reculer(noeud*& p){
@@ -71,31 +61,6 @@ void map<Tclef,Tvaleur>::iterator::reculer(noeud*& p){
 }
 
 
-/*
-template <typename Tclef, typename Tvaleur>
-void map<Tclef,Tvaleur>::iterator::reculer(noeud*& p){
-    //RECULER le pointeur p vers le noeud precedent en inordre
-    //si on est a la fin, descendre a droite
-    if(p->POIDS==0){
-        for(p=p->GAUCHE;p->DROITE!=nullptr;p=p->DROITE);
-        return;
-    }
-    //trouver la cellule suivant=APRES en remontant
-    const Tclef& a_preceder=p->CONTENU->first;
-    for(;p->POIDS!=0;p=p->PARENT);
-    noeud *q=p->GAUCHE; //la racine
-    while(q!=nullptr)
-        if(q->CONTENU->first < a_preceder){
-            p=q;
-            q=q->DROITE;
-        }
-        else
-            q=q->GAUCHE;
-    assert(p->DROITE!=p);
-    //cette fonction plante
-    //si on recule du debut
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////
 // equilibre
@@ -103,18 +68,58 @@ void map<Tclef,Tvaleur>::iterator::reculer(noeud*& p){
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
+  size_t poidsDroite=(p->DROITE==nullptr)?0:p->DROITE->POIDS;
+  size_t poidsGauche=(p->GAUCHE==nullptr)?0:p->GAUCHE->POIDS;
+  if(p->POIDS>3 && poidsGauche > poidsDroite*RATIO)
+    rotation_gauche_droite(p);
 }
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
+  size_t poidsDroite=(p->DROITE==nullptr)?0:p->DROITE->POIDS;
+  size_t poidsGauche=(p->GAUCHE==nullptr)?0:p->GAUCHE->POIDS;
+  if(p->POIDS>3 && poidsDroite > poidsGauche*RATIO)
+    rotation_droite_gauche(p);
 }
 
 template <typename Tclef, typename Tvaleur>
-void map<Tclef,Tvaleur>::rotation_gauche_droite(noeud*& p){
+void map<Tclef,Tvaleur>::rotation_gauche_droite(noeud* p){
+  noeud* gauche=p->GAUCHE;
+  p->GAUCHE=gauche->DROITE;
+  if(gauche->DROITE!=nullptr)gauche->DROITE->PARENT=p;
+  gauche->DROITE=p;
+  if(p->PARENT->GAUCHE == p)
+    p->PARENT->GAUCHE=gauche;
+  else
+    p->PARENT->DROITE=gauche;
+  gauche->PARENT=p->PARENT;
+  p->PARENT=gauche;
+
+
+  gauche->POIDS=p->POIDS;
+  p->POIDS=
+    ((p->GAUCHE==nullptr)?0:p->GAUCHE->POIDS)
+    + ((p->DROITE==nullptr)?0:p->DROITE->POIDS) +1;
 }
 
 template <typename Tclef, typename Tvaleur>
-void map<Tclef,Tvaleur>::rotation_droite_gauche(noeud*& p){
+void map<Tclef,Tvaleur>::rotation_droite_gauche(noeud* p){
+  noeud* droite=p->DROITE;
+  p->DROITE=droite->GAUCHE;
+  if(droite->GAUCHE!=nullptr)droite->GAUCHE->PARENT=p;
+  droite->GAUCHE=p;
+  if(p->PARENT->GAUCHE == p)
+    p->PARENT->GAUCHE=droite;
+  else
+    p->PARENT->DROITE=droite;
+  droite->PARENT=p->PARENT;
+  p->PARENT=droite;
+
+
+  droite->POIDS=p->POIDS;
+  p->POIDS=
+    ((p->GAUCHE==nullptr)?0:p->GAUCHE->POIDS)
+    + ((p->DROITE==nullptr)?0:p->DROITE->POIDS) +1;
 }
 
 

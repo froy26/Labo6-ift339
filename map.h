@@ -55,8 +55,8 @@ private:
     
     void transferer_vers_la_droite(noeud*&);
     void transferer_vers_la_gauche(noeud*&);
-    void rotation_gauche_droite(noeud*&);
-    void rotation_droite_gauche(noeud*&);
+    void rotation_gauche_droite(noeud*);
+    void rotation_droite_gauche(noeud*);
     
     void afficher(noeud*,int,std::vector<std::string>&,double&,int&)const;
     void afficher_barres(std::vector<std::string>&,int)const;
