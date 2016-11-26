@@ -19,6 +19,7 @@
 #include <cmath>
 
 #include <iostream>
+using namespace std;
 
 template <typename Tclef, typename Tvaleur>
 class map{

@@ -12,7 +12,6 @@
 #ifndef map2_h
 #define map2_h
 #include <iostream>
-using namespace std;
 
 #define RATIO1 3  // 3:1
 #define RATIO2 2
@@ -22,18 +21,16 @@ using namespace std;
 
 template <typename Tclef, typename Tvaleur>
 typename map<Tclef,Tvaleur>::iterator map<Tclef,Tvaleur>::lower_bound(const Tclef& c)const{
-    noeud* a=RACINE();
-    while(a->POIDS!=1){
-      if(c < a->CONTENU->first)
-        a=a->GAUCHE;
-      else if(a->CONTENU->first < c)
-        a=a->DROITE;
-      else
-        return iterator(a);
-    }
-    if(a->CONTENU->first < c)
-      iterator::avancer(a);
-    return iterator(a);
+  noeud* best=APRES;
+  noeud* a=RACINE();
+  while(a!=nullptr && a->POIDS!=1){
+    if(c < a->CONTENU->first){
+      best=a;
+      a=a->GAUCHE;
+    }else
+      a=a->DROITE;
+  }
+  return iterator(best);
 
 }
 
@@ -48,7 +45,6 @@ void map<Tclef,Tvaleur>::iterator::avancer(noeud*& p){
   if(p->DROITE!=nullptr){
     p=p->DROITE;
     while(p->GAUCHE!=nullptr) p=p->GAUCHE;
-    return ;
   }else{
     while(p->PARENT->DROITE==p && p->PARENT->POIDS!=0) p=p->PARENT;
     p=p->PARENT;
@@ -75,29 +71,36 @@ void map<Tclef,Tvaleur>::iterator::reculer(noeud*& p){
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_droite(noeud*& p){
-  noeud* gauche=p->GAUCHE;
+  noeud*& gauche=p->GAUCHE;
   size_t poidsDroite=(p->DROITE==nullptr)?0:p->DROITE->POIDS;
-  size_t poidsGauche=(p->GAUCHE==nullptr)?0:p->GAUCHE->POIDS;
-  size_t poidsGDroite=(gauche->DROITE==nullptr)?0:gauche->DROITE->POIDS;
-  size_t poidsGGauche=(gauche->GAUCHE==nullptr)?0:gauche->GAUCHE->POIDS;
-  if(poidsGauche>3 && poidsGDroite > poidsGGauche*RATIO2)
-    rotation_droite_gauche(gauche);
+  size_t poidsGauche=0;
+  if(gauche!=nullptr){
+    poidsGauche=gauche->POIDS;
+    size_t poidsGDroite=(gauche->DROITE==nullptr)?0:gauche->DROITE->POIDS;
+    size_t poidsGGauche=(gauche->GAUCHE==nullptr)?0:gauche->GAUCHE->POIDS;
+    if(poidsGauche>RATIO2 && poidsGDroite > poidsGGauche*RATIO2)
+      rotation_droite_gauche(gauche);
+  }
 
-  if(p->POIDS>3 && poidsGauche > poidsDroite*RATIO1)
+  if(p->POIDS>RATIO1 && poidsGauche > poidsDroite*RATIO1)
     rotation_gauche_droite(p);
 }
 
 template <typename Tclef, typename Tvaleur>
 void map<Tclef,Tvaleur>::transferer_vers_la_gauche(noeud*& p){
-  noeud* droite=p->DROITE;
-  size_t poidsDroite=(p->DROITE==nullptr)?0:p->DROITE->POIDS;
+  noeud*& droite=p->DROITE;
+  size_t poidsDroite=0;
   size_t poidsGauche=(p->GAUCHE==nullptr)?0:p->GAUCHE->POIDS;
-  size_t poidsDDroite=(droite->DROITE==nullptr)?0:droite->DROITE->POIDS;
-  size_t poidsDGauche=(droite->GAUCHE==nullptr)?0:droite->GAUCHE->POIDS;
-  if(poidsDroite>3 && poidsDGauche > poidsDDroite*RATIO2)
-    rotation_gauche_droite(droite);
+  if(droite!=nullptr){
+    poidsDroite=droite->POIDS;
+    size_t poidsDDroite=(droite->DROITE==nullptr)?0:droite->DROITE->POIDS;
+    size_t poidsDGauche=(droite->GAUCHE==nullptr)?0:droite->GAUCHE->POIDS;
 
-  if(p->POIDS>3 && poidsDroite > poidsGauche*RATIO1)
+    if(poidsDroite>RATIO2 && poidsDGauche > poidsDDroite*RATIO2)
+      rotation_gauche_droite(droite);
+  }
+
+  if(p->POIDS>RATIO1 && poidsDroite > poidsGauche*RATIO1)
     rotation_droite_gauche(p);
 }
 
